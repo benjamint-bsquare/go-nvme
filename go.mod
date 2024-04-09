@@ -1,10 +1,10 @@
 module github.com/dswarbrick/go-nvme
 
-go 1.19
+go 1.21
 
 require (
-	github.com/stretchr/testify v1.8.1
-	golang.org/x/sys v0.1.0
+	github.com/stretchr/testify v1.9.0
+	golang.org/x/sys v0.19.0
 )
 
 require (

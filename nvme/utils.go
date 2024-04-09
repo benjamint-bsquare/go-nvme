@@ -36,7 +36,7 @@ func init() {
 	}
 }
 
-func formatBigBytes(v *big.Int) string {
+func FormatBigBytes(v *big.Int) string {
 	var i int
 
 	suffixes := [...]string{"B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"}
@@ -58,8 +58,8 @@ func formatBigBytes(v *big.Int) string {
 	}
 }
 
-// le128ToBigInt takes a little-endian 16-byte slice and returns a *big.Int representing it.
-func le128ToBigInt(buf [16]byte) *big.Int {
+// Le128ToBigInt takes a little-endian 16-byte slice and returns a *big.Int representing it.
+func Le128ToBigInt(buf [16]byte) *big.Int {
 	// Int.SetBytes() expects big-endian input, so reverse the bytes locally first
 	rev := make([]byte, 16)
 	for x := 0; x < 16; x++ {

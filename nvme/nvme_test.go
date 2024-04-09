@@ -28,7 +28,7 @@ func TestNVMe(t *testing.T) {
 	assert.Equal(uintptr(72), unsafe.Sizeof(nvmePassthruCommand{}))
 	assert.Equal(uintptr(4096), unsafe.Sizeof(nvmeIdentController{}))
 	assert.Equal(uintptr(4096), unsafe.Sizeof(nvmeIdentNamespace{}))
-	assert.Equal(uintptr(512), unsafe.Sizeof(nvmeSMARTLog{}))
+	assert.Equal(uintptr(512), unsafe.Sizeof(SmartLog{}))
 
 	// More tests to follow...
 }

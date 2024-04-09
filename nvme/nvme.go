@@ -130,12 +130,15 @@ func (d *NVMeDevice) PrintSMART(w io.Writer) error {
 		return err
 	}
 
-	var sl nvmeSMARTLog
+	var sl SmartLog
 
-	binary.Read(bytes.NewBuffer(buf[:]), NativeEndian, &sl)
+	err := binary.Read(bytes.NewBuffer(buf[:]), NativeEndian, &sl)
+	if err != nil {
+		return err
+	}
 
-	unitsRead := le128ToBigInt(sl.DataUnitsRead)
-	unitsWritten := le128ToBigInt(sl.DataUnitsWritten)
+	unitsRead := Le128ToBigInt(sl.DataUnitsRead)
+	unitsWritten := Le128ToBigInt(sl.DataUnitsWritten)
 	unit := big.NewInt(512 * 1000)
 
 	fmt.Fprintln(w, "\nSMART data follows:")
@@ -146,19 +149,37 @@ func (d *NVMeDevice) PrintSMART(w io.Writer) error {
 	fmt.Fprintf(w, "Avail. spare threshold: %d%%\n", sl.SpareThresh)
 	fmt.Fprintf(w, "Percentage used: %d%%\n", sl.PercentUsed)
 	fmt.Fprintf(w, "Data units read: %d [%s]\n",
-		unitsRead, formatBigBytes(new(big.Int).Mul(unitsRead, unit)))
+		unitsRead, FormatBigBytes(new(big.Int).Mul(unitsRead, unit)))
 	fmt.Fprintf(w, "Data units written: %d [%s]\n",
-		unitsWritten, formatBigBytes(new(big.Int).Mul(unitsWritten, unit)))
-	fmt.Fprintf(w, "Host read commands: %d\n", le128ToBigInt(sl.HostReads))
-	fmt.Fprintf(w, "Host write commands: %d\n", le128ToBigInt(sl.HostWrites))
-	fmt.Fprintf(w, "Controller busy time: %d\n", le128ToBigInt(sl.CtrlBusyTime))
-	fmt.Fprintf(w, "Power cycles: %d\n", le128ToBigInt(sl.PowerCycles))
-	fmt.Fprintf(w, "Power on hours: %d\n", le128ToBigInt(sl.PowerOnHours))
-	fmt.Fprintf(w, "Unsafe shutdowns: %d\n", le128ToBigInt(sl.UnsafeShutdowns))
-	fmt.Fprintf(w, "Media & data integrity errors: %d\n", le128ToBigInt(sl.MediaErrors))
-	fmt.Fprintf(w, "Error information log entries: %d\n", le128ToBigInt(sl.NumErrLogEntries))
+		unitsWritten, FormatBigBytes(new(big.Int).Mul(unitsWritten, unit)))
+	fmt.Fprintf(w, "Host read commands: %d\n", Le128ToBigInt(sl.HostReads))
+	fmt.Fprintf(w, "Host write commands: %d\n", Le128ToBigInt(sl.HostWrites))
+	fmt.Fprintf(w, "Controller busy time: %d\n", Le128ToBigInt(sl.CtrlBusyTime))
+	fmt.Fprintf(w, "Power cycles: %d\n", Le128ToBigInt(sl.PowerCycles))
+	fmt.Fprintf(w, "Power on hours: %d\n", Le128ToBigInt(sl.PowerOnHours))
+	fmt.Fprintf(w, "Unsafe shutdowns: %d\n", Le128ToBigInt(sl.UnsafeShutdowns))
+	fmt.Fprintf(w, "Media & data integrity errors: %d\n", Le128ToBigInt(sl.MediaErrors))
+	fmt.Fprintf(w, "Error information log entries: %d\n", Le128ToBigInt(sl.NumErrLogEntries))
 
 	return nil
+}
+
+func (d *NVMeDevice) ReadSMART() (*SmartLog, error) {
+	buf := make([]byte, 512)
+
+	// Read SMART log
+	if err := d.readLogPage(0x02, &buf); err != nil {
+		return nil, err
+	}
+
+	var sl SmartLog
+
+	err := binary.Read(bytes.NewBuffer(buf[:]), NativeEndian, &sl)
+	if err != nil {
+		return nil, err
+	}
+
+	return &sl, nil
 }
 
 func (d *NVMeDevice) readLogPage(logID uint8, buf *[]byte) error {
@@ -233,7 +254,7 @@ type nvmeIdentNamespace struct {
 	Vs      [3712]byte
 } // 4096 bytes
 
-type nvmeSMARTLog struct {
+type SmartLog struct {
 	CritWarning      uint8
 	Temperature      [2]uint8
 	AvailSpare       uint8
