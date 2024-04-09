@@ -1,4 +1,4 @@
-module github.com/dswarbrick/go-nvme
+module github.com/benjamint-bsquare/go-nvme
 
 go 1.21
 
