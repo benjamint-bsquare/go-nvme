@@ -22,7 +22,7 @@ import (
 	"math/big"
 	"unsafe"
 
-	"github.com/dswarbrick/go-nvme/ioctl"
+	"github.com/benjamint-bsquare/go-nvme/ioctl"
 
 	"golang.org/x/sys/unix"
 )

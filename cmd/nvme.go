@@ -21,7 +21,7 @@ import (
 	"runtime"
 	"unsafe"
 
-	"github.com/dswarbrick/go-nvme/nvme"
+	"github.com/benjamint-bsquare/go-nvme/nvme"
 
 	"golang.org/x/sys/unix"
 )
